@@ -1,0 +1,248 @@
+// AI LifeHub — Prisma Database Schema
+// Database Engine: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  USER
+  ADMIN
+  PREMIUM
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum HabitFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum MoodType {
+  GREAT
+  GOOD
+  NEUTRAL
+  BAD
+  TERRIBLE
+}
+
+enum SenderType {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ==========================================
+// USER & AUTHENTICATION MODELS
+// ==========================================
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  name          String?
+  role          Role           @default(USER)
+  avatarUrl     String?
+  isVerified    Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relationships
+  profile       Profile?
+  sessions      Session[]
+  refreshTokens RefreshToken[]
+  tasks         Task[]
+  habits        Habit[]
+  journals      JournalEntry[]
+  moodLogs      MoodLog[]
+  conversations Conversation[]
+  aiInsights    AIInsight[]
+  usage         UserUsage?
+
+  @@index([email])
+}
+
+model Profile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio            String?
+  timezone       String   @default("UTC")
+  themePreference String  @default("dark")
+  aiTonePreference String @default("encouraging")
+  updatedAt      DateTime @updatedAt
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+}
+
+// ==========================================
+// TASK & HABIT MANAGEMENT MODELS
+// ==========================================
+
+model Task {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  aiSuggested Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId, status])
+}
+
+model Habit {
+  id          String         @id @default(uuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  frequency   HabitFrequency @default(DAILY)
+  targetCount Int            @default(1)
+  logs        HabitLog[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId])
+}
+
+model HabitLog {
+  id        String   @id @default(uuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  completed Boolean  @default(true)
+  loggedAt  DateTime @default(now())
+
+  @@index([habitId, loggedAt])
+}
+
+// ==========================================
+// JOURNALING & MOOD TRACKING
+// ==========================================
+
+model JournalEntry {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  content    String
+  sentiment  String?  // AI-analyzed sentiment (e.g., Positive, Neutral, Negative)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model MoodLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood      MoodType
+  note      String?
+  loggedAt  DateTime @default(now())
+
+  @@index([userId, loggedAt])
+}
+
+// ==========================================
+// AI CHAT & INSIGHTS
+// ==========================================
+
+model Conversation {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String    @default("New Conversation")
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         SenderType
+  content        String
+  tokensUsed     Int          @default(0)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+}
+
+model AIInsight {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String   // Productivity, Wellness, Routine, Focus
+  insightText String
+  actionable  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ==========================================
+// SYSTEM & USAGE METRICS
+// ==========================================
+
+model UserUsage {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalTokens    Int      @default(0)
+  monthlyRequests Int     @default(0)
+  lastResetDate  DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

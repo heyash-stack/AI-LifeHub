@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ailifehub-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: ailifehub
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: docker/dev/backend.Dockerfile
+    container_name: ailifehub-backend
+    restart: always
+    ports:
+      - '5000:5000'
+    environment:
+      PORT: 5000
+      NODE_ENV: development
+      CLIENT_URL: http://localhost:3000
+      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/ailifehub?schema=public
+      JWT_SECRET: dev_super_secret_jwt_access_key_123456789
+      JWT_REFRESH_SECRET: dev_super_secret_jwt_refresh_key_987654321
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: docker/dev/frontend.Dockerfile
+    container_name: ailifehub-frontend
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
