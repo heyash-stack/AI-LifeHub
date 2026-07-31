@@ -4,13 +4,23 @@ import { useAuth } from './context/AuthContext';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
+import Register from './pages/Register'; // <-- Add this
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: 'var(--bg-primary)',
+          color: 'var(--text-secondary)',
+        }}
+      >
         Loading session...
       </div>
     );
@@ -23,8 +33,12 @@ export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
-        
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected Routes */}
         <Route
           path="/"
           element={
@@ -44,6 +58,7 @@ export const App: React.FC = () => {
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
       </Routes>
     </BrowserRouter>
   );
