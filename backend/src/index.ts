@@ -7,6 +7,7 @@ import { connectDatabase } from './config/db.config';
 import { logger } from './utils/logger';
 import { errorHandler } from './middlewares/error.middleware';
 import authRoutes from './routes/auth.routes';
+import habitRoutes from "./routes/habit.routes";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/v1/auth', authRoutes);
+app.use("/api/v1/habits", habitRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

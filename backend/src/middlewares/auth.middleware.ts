@@ -23,17 +23,25 @@ export const authenticateUser = (
 
   const token = authHeader.split(' ')[1];
 
-  try {
-    const payload = verifyAccessToken(token);
-    req.user = payload;
-    next();
-  } catch (error) {
-    logger.warn('Unauthorized access attempt: Invalid token signature or expired');
-    res.status(401).json({
-      status: 'fail',
-      message: 'Invalid or expired access token.',
-    });
-  }
+console.log("Authorization Header:", authHeader);
+console.log("Extracted Token:", token);
+
+try {
+  const payload = verifyAccessToken(token);
+
+  console.log("Decoded Payload:", payload);
+
+  req.user = payload;
+  next();
+} catch (error) {
+  console.log("JWT Error:", error);
+
+  logger.warn('Unauthorized access attempt: Invalid token signature or expired');
+  res.status(401).json({
+    status: 'fail',
+    message: 'Invalid or expired access token.',
+  });
+}
 };
 
 export const authorizeRoles = (...allowedRoles: string[]) => {
