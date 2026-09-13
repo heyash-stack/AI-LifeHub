@@ -8,6 +8,7 @@ import { logger } from './utils/logger';
 import { errorHandler } from './middlewares/error.middleware';
 import authRoutes from './routes/auth.routes';
 import habitRoutes from "./routes/habit.routes";
+import taskRoutes from "./routes/task.routes";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', authRoutes);
 app.use("/api/v1/habits", habitRoutes);
+app.use("/api/v1/tasks", taskRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

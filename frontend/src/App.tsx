@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Dashboard } from './pages/Dashboard';
+import { Tasks } from './pages/Tasks';
 import { Login } from './pages/Login';
 import Register from './pages/Register'; // <-- Add this
+import { Habits } from './pages/Habits';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,8 +51,8 @@ export const App: React.FC = () => {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="tasks" element={<div style={{ color: 'var(--text-primary)' }}>Tasks Module (Coming Soon)</div>} />
-          <Route path="habits" element={<div style={{ color: 'var(--text-primary)' }}>Habits Module (Coming Soon)</div>} />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="habits" element={<Habits />} />
           <Route path="chat" element={<div style={{ color: 'var(--text-primary)' }}>AI Assistant Module (Coming Soon)</div>} />
           <Route path="journal" element={<div style={{ color: 'var(--text-primary)' }}>Journal Module (Coming Soon)</div>} />
           <Route path="analytics" element={<div style={{ color: 'var(--text-primary)' }}>Analytics Module (Coming Soon)</div>} />

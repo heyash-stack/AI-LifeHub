@@ -152,4 +152,16 @@ export class AuthService {
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
+
+  static async logout(refreshToken: string) {
+    if (!refreshToken) return;
+    try {
+      await db.refreshToken.update({
+        where: { token: refreshToken },
+        data: { revoked: true },
+      });
+    } catch (error) {
+      // Ignore if token not found or already revoked
+    }
+  }
 }

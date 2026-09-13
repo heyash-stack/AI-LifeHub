@@ -1,1 +1,1 @@
-export defualt function useTheme(){ return "light" }
+export default function useTheme(){ return "light" }

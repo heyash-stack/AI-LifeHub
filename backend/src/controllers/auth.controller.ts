@@ -26,3 +26,13 @@ export const refreshHandler = asyncHandler(async (req: Request, res: Response) =
     data: tokens,
   });
 });
+
+export const logoutHandler = asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  if (refreshToken) {
+    await AuthService.logout(refreshToken);
+  }
+  res.status(200).json({
+    status: 'success',
+  });
+});
