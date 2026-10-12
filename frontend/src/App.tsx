@@ -8,6 +8,9 @@ import { Login } from './pages/Login';
 import Register from './pages/Register'; // <-- Add this
 import { Habits } from './pages/Habits';
 
+import { Analytics } from './pages/Analytics';
+import { Settings } from './pages/settings';
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -55,8 +58,8 @@ export const App: React.FC = () => {
           <Route path="habits" element={<Habits />} />
           <Route path="chat" element={<div style={{ color: 'var(--text-primary)' }}>AI Assistant Module (Coming Soon)</div>} />
           <Route path="journal" element={<div style={{ color: 'var(--text-primary)' }}>Journal Module (Coming Soon)</div>} />
-          <Route path="analytics" element={<div style={{ color: 'var(--text-primary)' }}>Analytics Module (Coming Soon)</div>} />
-          <Route path="settings" element={<div style={{ color: 'var(--text-primary)' }}>Settings Module (Coming Soon)</div>} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

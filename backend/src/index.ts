@@ -9,6 +9,7 @@ import { errorHandler } from './middlewares/error.middleware';
 import authRoutes from './routes/auth.routes';
 import habitRoutes from "./routes/habit.routes";
 import taskRoutes from "./routes/task.routes";
+import profileRoutes from "./routes/profile.routes";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.get('/health', (req, res) => {
 app.use('/api/v1/auth', authRoutes);
 app.use("/api/v1/habits", habitRoutes);
 app.use("/api/v1/tasks", taskRoutes);
+app.use("/api/v1/profile", profileRoutes);
 
 // Global Error Handler
 app.use(errorHandler);
