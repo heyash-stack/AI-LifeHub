@@ -101,7 +101,7 @@ export const Settings: React.FC = () => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Fetch current user profile
-  const { data: profile, isLoading, isError } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const res = await apiClient.get('/profile');

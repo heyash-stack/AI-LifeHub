@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Navbar } from './Navbar';
@@ -11,8 +11,8 @@ const renderNavbarWithAuth = (user: any) => {
         isAuthenticated: !!user,
         isLoading: false,
         user,
-        login: () => {},
-        logout: () => {},
+        login: () => { },
+        logout: () => { },
       }}
     >
       <Navbar />
